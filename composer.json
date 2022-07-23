@@ -1,8 +1,8 @@
 {
-    "name": "symfony/skeleton",
+    "name": "stefano/ratelimitedapp",
     "type": "project",
     "license": "MIT",
-    "description": "A minimal Symfony project recommended to create bare bones applications",
+    "description": "A simple POC for a rate-limited symfony app",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
