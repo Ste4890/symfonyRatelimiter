@@ -33,15 +33,17 @@ RUN set -eux; \
 	docker-php-ext-install -j$(nproc) \
 		intl \
 		zip \
-	; \
+    ; \
 	pecl install \
 		apcu-${APCU_VERSION} \
+		redis \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
 		apcu \
 		opcache \
-	; \
+    	redis \
+    ; \
 	\
 	runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
