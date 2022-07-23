@@ -1,3 +1,9 @@
-controllers:
-    resource: ../src/Controller/
-    type: attribute
+get_route:
+    path: api/v1/hello
+    controller: App\Controller\ApiController::handleGet
+    methods: GET
+
+post_route:
+    path: api/v1/hello
+    controller: App\Controller\ApiController::handlePost
+    methods: POST
