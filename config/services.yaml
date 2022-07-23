@@ -4,7 +4,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    app.ip_whitelist: '%env(IP_WHITELIST)%'
+    app.max_post_requests: '%env(MAX_POST_REQUEST)%' #defaults to 3
+    app.max_get_requests: '%env(MAX_GET_REQUESTS)%' #defaults to 5
+    app.ratelimit_interval: '%env(RATELIMIT_INTERVAL)%' # defaults to 60 seconds
+    
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -20,6 +24,12 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    App\Services\IPBasedRateLimiterService:
+        arguments:
+            $maxPostRequests: '%app.max_post_requests%'
+            $maxGetRequests: '%app.max_get_requests%'
+            $ipWhitelist: '%app.ip_whitelist%'
+            $ratelimitInterval: '%app.ratelimit_interval%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
