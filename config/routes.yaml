@@ -7,3 +7,7 @@ post_route:
     path: api/v1/hello
     controller: App\Controller\ApiController::handlePost
     methods: POST
+
+test_page:
+    path: /
+    controller: App\Controller\ApiController::index
