@@ -25,9 +25,9 @@ class IPBasedRateLimiterService implements RateLimiterInterface {
      * Naive limiter algo:
      * at the start of each request, ask redis storage for value for key(ip+method)
      * clear value from expired requests
+     * if value contains less than or equal max allowed => ok!
      * add current timestamp
      * store back in cache
-     * if value contains less than or equal max allowed => ok!
      * else if value is greater than max allowed rate limit => ko!
      *
      */
@@ -49,23 +49,29 @@ class IPBasedRateLimiterService implements RateLimiterInterface {
             $pastRequestsTimestamps,
             $now);
 
-        //- add current timestamp
-        $timestampsInCurrentTimeFrame[] = $now;
-
-        // store back in cache
-        $this->storage->set($cacheKey, $timestampsInCurrentTimeFrame);
-
-        if (count($timestampsInCurrentTimeFrame) <= $this->getRequestLimitByMethod($method)) {
+        $shouldRateLimit = false;
+        //since we do not want to add limited attempts to pool, we count old attempts
+        // + 1, which is the current one. If considering this current attempt we are still
+        // within the bounds, we can add it to the pool, otherwise we simply reject the request
+        // and the current attempt is not registered.
+        $requestTotal = count($timestampsInCurrentTimeFrame) + 1;
+        if ( $requestTotal <= $this->getRequestLimitByMethod($method)) {
             //- if value contains less than or equal max allowed => ok!
-            return false;
+            //- add current timestamp
+            $timestampsInCurrentTimeFrame[] = $now;
+
+            // store back in cache
+            $this->storage->set($cacheKey, $timestampsInCurrentTimeFrame);
         } else {
             $this->message =
                 "$method requests by $remoteAddress have exceeded the limit of " .
                 $this->getRequestLimitByMethod($method) .
-                " in {$this->ratelimitInterval} seconds";
+                " in {$this->ratelimitInterval} seconds. You have made " .
+            " $requestTotal requests";
             //- else if value is greater than max allowed rate limit => ko!
-            return true;
+            $shouldRateLimit = true;
         }
+        return $shouldRateLimit;
     }
 
     public function getMessage(): string {
