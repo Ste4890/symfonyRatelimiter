@@ -8,6 +8,7 @@ parameters:
     app.max_post_requests: '%env(MAX_POST_REQUEST)%' #defaults to 3
     app.max_get_requests: '%env(MAX_GET_REQUESTS)%' #defaults to 5
     app.ratelimit_interval: '%env(RATELIMIT_INTERVAL)%' # defaults to 60 seconds
+    app.redis_url: '%env(REDIS_URL)%'
     
 services:
     # default configuration for services in *this* file
@@ -30,6 +31,10 @@ services:
             $maxGetRequests: '%app.max_get_requests%'
             $ipWhitelist: '%app.ip_whitelist%'
             $ratelimitInterval: '%app.ratelimit_interval%'
+            
+    App\Services\RedisStorage:
+        arguments:
+            $redisUrl: '%app.redis_url%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

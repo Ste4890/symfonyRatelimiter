@@ -8,8 +8,8 @@ class RedisStorage implements \App\Interfaces\StorageInterface {
     /** @var \Redis adapter */
     public \Redis $adapter;
 
-    public function __construct() {
-        $this->adapter = RedisAdapter::createConnection('redis://redis');
+    public function __construct(string $redisUrl) {
+        $this->adapter = RedisAdapter::createConnection($redisUrl);
     }
 
     public function set(string $key, array $data): bool {
