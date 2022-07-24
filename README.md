@@ -22,3 +22,8 @@ The aforementioned setup did not include a Redis service, which has been added b
 - Implementation from scratch of an IP based rate limiting service
 - limits should be configurable (by default 3 POST and 5 GET every 60 seconds)
 
+## Troubleshooting
+
+If `docker-compose up` up fails because another service is using port 80 (such as Apache, for example),
+run  `export HTTP_PORT=999` to force caddy to use another port instead of the default one.
+
